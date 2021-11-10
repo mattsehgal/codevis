@@ -1,0 +1,347 @@
+<---PACKAGE DEC:
+enterIdentifier: org
+        parent: PackageNameContext      
+enterIdentifier: msehgal
+        parent: PackageNameContext      
+enterIdentifier: codevis
+        parent: PackageNameContext      
+enterIdentifier: util
+        parent: PackageNameContext      
+enterIdentifier: directories
+        parent: PackageNameContext
+
+
+<---IMPORT DECS:      
+enterIdentifier: java
+        parent: PackageOrTypeNameContext
+enterIdentifier: io
+        parent: PackageOrTypeNameContext
+enterIdentifier: File
+        parent: TypeNameContext
+
+enterIdentifier: java
+        parent: PackageOrTypeNameContext
+enterIdentifier: io
+        parent: PackageOrTypeNameContext
+enterIdentifier: IOException
+        parent: TypeNameContext
+
+enterIdentifier: java
+        parent: PackageOrTypeNameContext
+enterIdentifier: nio
+        parent: PackageOrTypeNameContext
+enterIdentifier: file
+        parent: PackageOrTypeNameContext
+enterIdentifier: Path
+        parent: TypeNameContext
+
+enterIdentifier: java
+        parent: PackageOrTypeNameContext
+enterIdentifier: util
+        parent: PackageOrTypeNameContext
+enterIdentifier: LinkedList
+        parent: TypeNameContext
+
+enterIdentifier: java
+        parent: PackageOrTypeNameContext
+enterIdentifier: util
+        parent: PackageOrTypeNameContext
+enterIdentifier: Queue
+        parent: TypeNameContext
+
+enterIdentifier: org
+        parent: PackageOrTypeNameContext
+enterIdentifier: msehgal
+        parent: PackageOrTypeNameContext
+enterIdentifier: codevis
+        parent: PackageOrTypeNameContext
+enterIdentifier: util
+        parent: PackageOrTypeNameContext
+enterIdentifier: StringUtils
+        parent: TypeNameContext
+
+
+<---CLASS:
+enterIdentifier: DirTree
+        parent: NormalClassDeclarationContext
+
+
+<---FIELDS:
+enterIdentifier: DirTreeNode
+        parent: UnannClassType_lfno_unannClassOrInterfaceTypeContext
+enterIdentifier: root
+        parent: VariableDeclaratorIdContext
+
+enterIdentifier: File
+        parent: UnannClassType_lfno_unannClassOrInterfaceTypeContext
+enterIdentifier: rootFile
+        parent: VariableDeclaratorIdContext
+
+enterIdentifier: ast
+        parent: VariableDeclaratorIdContext
+
+
+<---CONSTRUCTORS:
+enterIdentifier: DirTree
+        parent: SimpleTypeNameContext
+enterIdentifier: File
+        parent: UnannClassType_lfno_unannClassOrInterfaceTypeContext
+enterIdentifier: root
+        parent: VariableDeclaratorIdContext
+enterIdentifier: ast
+        parent: VariableDeclaratorIdContext
+enterIdentifier: rootFile
+        parent: FieldAccessContext
+enterIdentifier: root
+        parent: ExpressionNameContext
+enterIdentifier: setAst
+        parent: MethodInvocationContext
+enterIdentifier: ast
+        parent: ExpressionNameContext
+enterIdentifier: initTree
+        parent: MethodNameContext
+enterIdentifier: ast
+        parent: ExpressionNameContext
+enterIdentifier: IOException
+        parent: UnannClassTypeContext
+enterIdentifier: e
+        parent: VariableDeclaratorIdContext
+enterIdentifier: System
+        parent: PackageOrTypeNameContext
+enterIdentifier: out
+        parent: TypeNameContext
+enterIdentifier: println
+        parent: MethodInvocationContext
+
+enterIdentifier: DirTree
+        parent: SimpleTypeNameContext
+enterIdentifier: File
+        parent: UnannClassType_lfno_unannClassOrInterfaceTypeContext
+enterIdentifier: root
+        parent: VariableDeclaratorIdContext
+enterIdentifier: root
+        parent: ExpressionNameContext
+
+
+<---METHODS:
+enterIdentifier: initTree
+        parent: MethodDeclaratorContext
+enterIdentifier: ast
+        parent: VariableDeclaratorIdContext
+enterIdentifier: IOException
+        parent: ClassTypeContext
+enterIdentifier: root
+        parent: FieldAccessContext
+enterIdentifier: DirTreeNode
+        parent: ClassInstanceCreationExpression_lfno_primaryContext
+enterIdentifier: rootFile
+        parent: FieldAccess_lf_primaryContext
+enterIdentifier: ast
+        parent: ExpressionNameContext
+
+enterIdentifier: walk
+        parent: MethodDeclaratorContext
+enterIdentifier: DirTreeNode
+        parent: UnannClassType_lfno_unannClassOrInterfaceTypeContext
+enterIdentifier: node
+        parent: VariableDeclaratorIdContext
+enterIdentifier: System
+        parent: PackageOrTypeNameContext
+enterIdentifier: out
+        parent: TypeNameContext
+enterIdentifier: println
+        parent: MethodInvocationContext
+enterIdentifier: node
+        parent: TypeNameContext
+enterIdentifier: getName
+        parent: MethodInvocation_lfno_primaryContext
+enterIdentifier: node
+        parent: TypeNameContext
+enterIdentifier: getAST
+        parent: MethodInvocation_lfno_primaryContext
+enterIdentifier: System
+        parent: PackageOrTypeNameContext
+enterIdentifier: out
+        parent: TypeNameContext
+enterIdentifier: println
+        parent: MethodInvocationContext
+enterIdentifier: node
+        parent: TypeNameContext
+enterIdentifier: getAST
+        parent: MethodInvocation_lfno_primaryContext
+enterIdentifier: toString
+        parent: MethodInvocation_lf_primaryContext
+enterIdentifier: isLeaf
+        parent: MethodNameContext
+enterIdentifier: node
+        parent: ExpressionNameContext
+enterIdentifier: node
+        parent: TypeNameContext
+enterIdentifier: getChildren
+        parent: MethodInvocation_lfno_primaryContext
+enterIdentifier: forEach
+        parent: MethodInvocationContext
+enterIdentifier: child
+        parent: LambdaParametersContext
+
+enterIdentifier: walk
+        parent: MethodNameContext
+enterIdentifier: child
+        parent: ExpressionNameContext
+enterIdentifier: walk
+        parent: MethodDeclaratorContext
+enterIdentifier: walk
+        parent: MethodInvocationContext
+enterIdentifier: root
+        parent: FieldAccess_lf_primaryContext
+enterIdentifier: DirTreeNode
+        parent: UnannClassType_lfno_unannClassOrInterfaceTypeContext
+
+enterIdentifier: get
+        parent: MethodDeclaratorContext
+enterIdentifier: String
+        parent: UnannClassType_lfno_unannClassOrInterfaceTypeContext
+enterIdentifier: name
+        parent: VariableDeclaratorIdContext
+enterIdentifier: Queue
+        parent: UnannClassType_lfno_unannClassOrInterfaceTypeContext
+enterIdentifier: DirTreeNode
+        parent: ClassType_lfno_classOrInterfaceTypeContext
+enterIdentifier: queue
+        parent: VariableDeclaratorIdContext
+enterIdentifier: LinkedList
+        parent: ClassInstanceCreationExpression_lfno_primaryContext
+enterIdentifier: DirTreeNode
+        parent: UnannClassType_lfno_unannClassOrInterfaceTypeContext
+enterIdentifier: node
+        parent: VariableDeclaratorIdContext
+enterIdentifier: root
+        parent: FieldAccess_lf_primaryContext
+enterIdentifier: queue
+        parent: TypeNameContext
+enterIdentifier: add
+        parent: MethodInvocationContext
+enterIdentifier: node
+        parent: ExpressionNameContext
+enterIdentifier: queue
+        parent: TypeNameContext
+enterIdentifier: isEmpty
+        parent: MethodInvocation_lfno_primaryContext
+enterIdentifier: node
+        parent: ExpressionNameContext
+enterIdentifier: queue
+        parent: TypeNameContext
+enterIdentifier: poll
+        parent: MethodInvocation_lfno_primaryContext
+enterIdentifier: name
+        parent: TypeNameContext
+enterIdentifier: equals
+        parent: MethodInvocation_lfno_primaryContext
+enterIdentifier: node
+        parent: TypeNameContext
+enterIdentifier: getName
+        parent: MethodInvocation_lfno_primaryContext
+enterIdentifier: node
+        parent: ExpressionNameContext
+enterIdentifier: isLeaf
+        parent: MethodNameContext
+enterIdentifier: node
+        parent: ExpressionNameContext
+enterIdentifier: queue
+        parent: TypeNameContext
+enterIdentifier: addAll
+        parent: MethodInvocationContext
+enterIdentifier: node
+        parent: TypeNameContext
+enterIdentifier: getChildren
+        parent: MethodInvocation_lfno_primaryContext
+enterIdentifier: DirTreeNode
+        parent: UnannClassType_lfno_unannClassOrInterfaceTypeContext
+
+enterIdentifier: get
+        parent: MethodDeclaratorContext
+enterIdentifier: Path
+        parent: UnannClassType_lfno_unannClassOrInterfaceTypeContext
+enterIdentifier: path
+        parent: VariableDeclaratorIdContext
+enterIdentifier: get
+        parent: MethodNameContext
+enterIdentifier: path
+        parent: TypeNameContext
+enterIdentifier: toFile
+        parent: MethodInvocation_lfno_primaryContext
+enterIdentifier: getName
+        parent: MethodInvocation_lf_primaryContext
+enterIdentifier: DirTreeNode
+        parent: UnannClassType_lfno_unannClassOrInterfaceTypeContext
+
+enterIdentifier: get
+        parent: MethodDeclaratorContext
+enterIdentifier: File
+        parent: UnannClassType_lfno_unannClassOrInterfaceTypeContext
+enterIdentifier: file
+        parent: VariableDeclaratorIdContext
+enterIdentifier: get
+        parent: MethodNameContext
+enterIdentifier: file
+        parent: TypeNameContext
+enterIdentifier: getName
+        parent: MethodInvocation_lfno_primaryContext
+
+enterIdentifier: isLeaf
+        parent: MethodDeclaratorContext
+enterIdentifier: DirTreeNode
+        parent: UnannClassType_lfno_unannClassOrInterfaceTypeContext
+enterIdentifier: node
+        parent: VariableDeclaratorIdContext
+enterIdentifier: node
+        parent: TypeNameContext
+enterIdentifier: getChildren
+        parent: MethodInvocation_lfno_primaryContext
+enterIdentifier: node
+        parent: TypeNameContext
+enterIdentifier: getChildren
+        parent: MethodInvocation_lfno_primaryContext
+enterIdentifier: isEmpty
+        parent: MethodInvocation_lf_primaryContext
+
+enterIdentifier: isAst
+        parent: MethodDeclaratorContext
+enterIdentifier: ast
+        parent: ExpressionNameContext
+
+enterIdentifier: setAst
+        parent: MethodDeclaratorContext
+enterIdentifier: ast
+        parent: VariableDeclaratorIdContext
+enterIdentifier: ast
+        parent: FieldAccessContext
+enterIdentifier: ast
+        parent: ExpressionNameContext
+enterIdentifier: DirTreeNode
+        parent: UnannClassType_lfno_unannClassOrInterfaceTypeContext
+
+enterIdentifier: getRoot
+        parent: MethodDeclaratorContext
+enterIdentifier: root
+        parent: FieldAccess_lf_primaryContext
+enterIdentifier: File
+        parent: UnannClassType_lfno_unannClassOrInterfaceTypeContext
+
+enterIdentifier: getRootFile
+        parent: MethodDeclaratorContext
+enterIdentifier: rootFile
+        parent: FieldAccess_lf_primaryContext
+
+enterIdentifier: Override
+        parent: TypeNameContext
+enterIdentifier: String
+        parent: UnannClassType_lfno_unannClassOrInterfaceTypeContext
+enterIdentifier: toString
+        parent: MethodDeclaratorContext
+enterIdentifier: StringUtils
+        parent: TypeNameContext
+enterIdentifier: printDirTree
+        parent: MethodInvocation_lfno_primaryContext
+enterIdentifier: root
+        parent: FieldAccess_lf_primaryContext
