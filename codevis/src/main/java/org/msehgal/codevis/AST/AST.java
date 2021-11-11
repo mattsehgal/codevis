@@ -25,7 +25,8 @@ public class AST {
     public CompilationUnit getRoot(){
         return this.root;
     }
-
+    
+    //hash table/constant time lookup
     public Node get(String name) {
         Queue<Node> queue = new LinkedList<>();
         Node node = this.root;
