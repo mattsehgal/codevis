@@ -49,8 +49,8 @@ public class ASTForest {
             ClassOrInterfaceNode coi = tree.getRoot().getClassOrInterfaceDeclaration();
             if(!tree.isContexted()){
                 coi.setSuperclass(get(coi.getSuperclass().getName())
-                                                            .getRoot()
-                                                            .getClassOrInterfaceDeclaration());
+                                                        .getRoot()
+                                                        .getClassOrInterfaceDeclaration());
                 tree.setContexted(true);
             }
         }

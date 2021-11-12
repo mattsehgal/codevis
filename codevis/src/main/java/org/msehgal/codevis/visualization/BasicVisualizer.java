@@ -23,6 +23,8 @@ public class BasicVisualizer {
     }
     
     public void addDirectory(String PATH){
+        //doesn't add anything to dirs field
+        this.directories.add(new DirTree(new File(PATH), true));
         this.forest.add(new DirTree(new File(PATH), true));
     }
 
@@ -55,8 +57,9 @@ public class BasicVisualizer {
     @SuppressWarnings("unchecked")
     public void printDirectoriesJSON(){
         JSONArray json = new JSONArray();
-        for(DirTree dir : this.directories)
+        for(DirTree dir : this.directories){
             json.add(dir.toJSON());
+            System.out.println(dir.toJSON());}
 
         System.out.println(json.toJSONString());
     }
