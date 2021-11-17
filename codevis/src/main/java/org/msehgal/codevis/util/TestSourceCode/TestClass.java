@@ -3,6 +3,7 @@ package org.msehgal.codevis.util.TestSourceCode;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class TestClass extends TestSuperClass implements TestInterface {
     private static int fieldA;
     private String fieldB;
