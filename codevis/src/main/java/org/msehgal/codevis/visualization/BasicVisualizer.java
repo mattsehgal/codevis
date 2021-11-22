@@ -2,7 +2,6 @@ package org.msehgal.codevis.visualization;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -11,9 +10,7 @@ import java.util.ArrayList;
 
 import org.json.simple.JSONArray;
 import org.msehgal.codevis.AST.ASTForest;
-import org.msehgal.codevis.util.directories.DirTree;
-import org.msehgal.codevis.util.directories.DirTreeNode;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Io;
+import org.msehgal.codevis.util.directories.*;
 
 public class BasicVisualizer {
     private ASTForest forest = new ASTForest();
@@ -63,9 +60,9 @@ public class BasicVisualizer {
         String line;
         try {
             BufferedReader br = new BufferedReader(new FileReader(f));
-
-        while((line = br.readLine()) != null)
-            res += (line+"\n");
+            while((line = br.readLine()) != null)
+                res += (line+"\n");
+            br.close();
         } catch(IOException e) {}
         return res;
     }

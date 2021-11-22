@@ -5,24 +5,18 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.msehgal.codevis.antlr.*;
+
 import org.msehgal.codevis.visualization.BasicVisualizer;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 
-import org.msehgal.codevis.util.TestSourceCode.TestClass;
-
-// @SpringBootApplication
-// @Controller
+@SpringBootApplication
+@Controller
 public class App {
 
 	final static String PATH = "C:/Users/matt/codevis/codevis/src/main/java/org/msehgal/codevis/util/TestSourceCode";
 	public static void main(String[] args) throws IOException {
-		//SpringApplication.run(App.class, args);
+		SpringApplication.run(App.class, args);
 		printTest();
 	}
 

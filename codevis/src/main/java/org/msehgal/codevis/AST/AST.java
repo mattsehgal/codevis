@@ -1,6 +1,5 @@
 package org.msehgal.codevis.AST;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -11,7 +10,6 @@ import org.msehgal.codevis.AST.nodes.ClassOrInterfaceNode;
 import org.msehgal.codevis.AST.nodes.CompilationUnit;
 import org.msehgal.codevis.AST.nodes.FieldNode;
 import org.msehgal.codevis.AST.nodes.MethodNode;
-import org.msehgal.codevis.AST.nodes.ModifierNode;
 import org.msehgal.codevis.AST.nodes.Node;
 import org.msehgal.codevis.AST.nodes.ParameterNode;
 
@@ -124,16 +122,6 @@ public class AST {
         json.put("class or interface", dec);
 
         return json;
-    }
-
-    private List<ModifierNode> separateAnnotations(List<ModifierNode> mods){
-        List<ModifierNode> anns = new ArrayList<>();
-        for(ModifierNode mod : mods){
-            if(mod.getName().contains("@")){
-                anns.add(mod);
-            }
-        }
-        return anns;
     }
 
     //type safety warning is annoying
