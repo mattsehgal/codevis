@@ -5,10 +5,21 @@ import java.util.List;
 
 public class DeclarationNode extends Node {
 
+    private List<AnnotationNode> annotations = new ArrayList<>();
     private List<ModifierNode> modifiers = new ArrayList<>();
 
     public DeclarationNode(Node parent, String name) {
         super(parent, name);
+    }
+
+    public void addAnnotation(String annotation){
+        AnnotationNode ann = new AnnotationNode(this, annotation);
+        this.annotations.add(ann);
+        addChildren(ann);
+    }
+
+    public void addAnnotations(List<String> annotations){
+        annotations.forEach(annotation->addAnnotation(annotation));
     }
 
     public void addModifier(String modifier){
@@ -19,6 +30,10 @@ public class DeclarationNode extends Node {
 
     public void addModifiers(List<String> modifiers){
         modifiers.forEach(modifier->addModifier(modifier));
+    }
+
+    public List<AnnotationNode> getAnnotations(){
+        return this.annotations;
     }
 
     public List<ModifierNode> getModifiers(){

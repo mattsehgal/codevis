@@ -17,6 +17,7 @@ public class TestClass extends TestSuperClass implements TestInterface {
 
     }
 
+    @SuppressWarnings("unused")
     public String methodB(String paramA, int paramB, boolean paramC){
         if(paramC) return paramA+paramB;
         else return "";

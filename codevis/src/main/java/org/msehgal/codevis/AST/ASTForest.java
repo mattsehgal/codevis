@@ -1,5 +1,6 @@
 package org.msehgal.codevis.AST;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +15,7 @@ public class ASTForest {
 
     public ASTForest(){
         this.forest = new HashMap<>();
+        this.trees = new ArrayList<>();
     }
 
     public ASTForest(DirTree dir){
@@ -48,7 +50,8 @@ public class ASTForest {
         for(AST tree : this.trees){
             ClassOrInterfaceNode coi = tree.getRoot().getClassOrInterfaceDeclaration();
             if(!tree.isContexted()){
-                coi.setSuperclass(get(coi.getSuperclass().getName())
+                String name = coi.getSuperclass().getName();
+                coi.setSuperclass(get(name)
                                                         .getRoot()
                                                         .getClassOrInterfaceDeclaration());
                 tree.setContexted(true);

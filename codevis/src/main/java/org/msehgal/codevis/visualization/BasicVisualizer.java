@@ -1,6 +1,9 @@
 package org.msehgal.codevis.visualization;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
@@ -10,6 +13,7 @@ import org.json.simple.JSONArray;
 import org.msehgal.codevis.AST.ASTForest;
 import org.msehgal.codevis.util.directories.DirTree;
 import org.msehgal.codevis.util.directories.DirTreeNode;
+import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Io;
 
 public class BasicVisualizer {
     private ASTForest forest = new ASTForest();
@@ -19,7 +23,7 @@ public class BasicVisualizer {
 
     public BasicVisualizer(String PATH){
         addDirectory(PATH);
-        this.forest.contextSupers();
+        //this.forest.contextSupers();
     }
     
     public void addDirectory(String PATH){
@@ -51,6 +55,19 @@ public class BasicVisualizer {
         }
 
         return new File("master.json");
+    }
+
+    public String getJSONasString(){
+        File f = this.getJSON();
+        String res = "";
+        String line;
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(f));
+
+        while((line = br.readLine()) != null)
+            res += (line+"\n");
+        } catch(IOException e) {}
+        return res;
     }
 
     //TYPE SAFETY

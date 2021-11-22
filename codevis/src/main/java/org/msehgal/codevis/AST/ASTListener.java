@@ -14,10 +14,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.msehgal.codevis.antlr.Java9Lexer;
 import org.msehgal.codevis.antlr.Java9Parser;
 
-import org.msehgal.codevis.AST.nodes.ClassOrInterfaceNode;
-import org.msehgal.codevis.AST.nodes.CompilationUnit;
-import org.msehgal.codevis.AST.nodes.FieldNode;
-import org.msehgal.codevis.AST.nodes.MethodNode;
+import org.msehgal.codevis.AST.nodes.*;
 import org.msehgal.codevis.antlr.Java9BaseListener;
 import org.msehgal.codevis.antlr.Java9Parser.ClassMemberDeclarationContext;
 import org.msehgal.codevis.antlr.Java9Parser.CompilationUnitContext;
@@ -26,6 +23,7 @@ import org.msehgal.codevis.antlr.Java9Parser.FormalParameterListContext;
 import org.msehgal.codevis.antlr.Java9Parser.InterfaceMemberDeclarationContext;
 import org.msehgal.codevis.antlr.Java9Parser.NormalClassDeclarationContext;
 import org.msehgal.codevis.antlr.Java9Parser.NormalInterfaceDeclarationContext;
+import org.msehgal.codevis.antlr.Java9Parser.PackageDeclarationContext;
 import org.msehgal.codevis.antlr.Java9Parser.VariableDeclaratorContext;
 
 public class ASTListener extends Java9BaseListener {
@@ -49,6 +47,12 @@ public class ASTListener extends Java9BaseListener {
         if(this.compilationUnit == null){
             this.compilationUnit = new CompilationUnit(this.path.getFileName().toString());
         }
+    }
+
+    @Override
+    public void enterPackageDeclaration(PackageDeclarationContext ctx) {
+        String name = ctx.getText().replaceFirst("package", "");
+        this.compilationUnit.setPackageDeclaration(new PackageNode(this.root, name));
     }
 
     @Override
@@ -117,7 +121,15 @@ public class ASTListener extends Java9BaseListener {
                                                                     .identifier()
                                                                     .getText()));
             }
-            node.addModifiers(modifierContextsToStrings(context.classModifier()));
+            List<String> mods = new ArrayList<>();
+            List<String> anns = new ArrayList<>();
+            modifierContextsToStrings(context.classModifier()).forEach(mod->{
+                if(mod.contains("@"))
+                    anns.add(mod);
+                else
+                    mods.add(mod);});
+            node.addAnnotations(anns);
+            node.addModifiers(mods);
             
         } else if(ctx instanceof NormalInterfaceDeclarationContext){
             NormalInterfaceDeclarationContext context = (NormalInterfaceDeclarationContext)ctx;
@@ -224,8 +236,12 @@ public class ASTListener extends Java9BaseListener {
                         .identifier()
                         .getText();
         MethodNode methodNode = new MethodNode(this.root, name);
-        methodNode.addModifiers(modifierContextsToStrings(ctx.methodDeclaration()
-                                                            .methodModifier()));
+        modifierContextsToStrings(ctx.methodDeclaration()
+                                    .methodModifier()).forEach(mod->{
+                                        if(mod.contains("@"))
+                                            methodNode.addAnnotation(mod);
+                                        else
+                                            methodNode.addModifier(mod);});
         FormalParameterListContext params = ctx.methodDeclaration()
                                                 .methodHeader()
                                                 .methodDeclarator()

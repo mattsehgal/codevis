@@ -1,5 +1,6 @@
 package org.msehgal.codevis.AST;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -10,16 +11,18 @@ import org.msehgal.codevis.AST.nodes.ClassOrInterfaceNode;
 import org.msehgal.codevis.AST.nodes.CompilationUnit;
 import org.msehgal.codevis.AST.nodes.FieldNode;
 import org.msehgal.codevis.AST.nodes.MethodNode;
+import org.msehgal.codevis.AST.nodes.ModifierNode;
 import org.msehgal.codevis.AST.nodes.Node;
 import org.msehgal.codevis.AST.nodes.ParameterNode;
 
 public class AST {
     //TODO PRIO0 - add tree functionality
     private CompilationUnit root;
-    private boolean contexted = false;
+    private boolean contexted;
 
     public AST(CompilationUnit root){
         this.root = root;
+        this.contexted = false;
     }
 
     public CompilationUnit getRoot(){
@@ -59,12 +62,16 @@ public class AST {
         JSONObject json = new JSONObject();
         CompilationUnit cu = this.root;
         json.put("compilation unit", cu.getName().toString());
-        json.put("package", cu.getPackageDeclaration());
+        json.put("package", cu.getPackageDeclaration().toString());
         json.put("imports", listToJSON(cu.getImports()));
 
         ClassOrInterfaceNode coi = cu.getClassOrInterfaceDeclaration();
         JSONObject dec = new JSONObject();
         dec.put("name", coi.getName().toString());
+        //TODO PRIO1 - annotation name not showing in json
+        // List<ModifierNode> cAnns = separateAnnotations(coi.getModifiers());
+        // if(!cAnns.isEmpty()) coi.getModifiers().removeAll(cAnns);
+        dec.put("annotations", listToJSON(coi.getAnnotations()));
         dec.put("modifiers", listToJSON(coi.getModifiers()));
         dec.put("interfaces", listToJSON(coi.getInterfaces()));
         //TODO PRIO1 - this null check needs to be removed once superclass parsing is done
@@ -89,6 +96,9 @@ public class AST {
         for(MethodNode method : coi.getMethods()){
             JSONObject methodJSON = new JSONObject();
             methodJSON.put("name", method.getName().toString());
+            // List<ModifierNode> mAnns = separateAnnotations(method.getModifiers());
+            // if(!mAnns.isEmpty()) method.getModifiers().removeAll(mAnns);
+            methodJSON.put("annotations", listToJSON(method.getAnnotations()));
             methodJSON.put("modifiers", listToJSON(method.getModifiers()));
             methodJSON.put("return type", method.getReturnType().toString());
             
@@ -114,6 +124,16 @@ public class AST {
         json.put("class or interface", dec);
 
         return json;
+    }
+
+    private List<ModifierNode> separateAnnotations(List<ModifierNode> mods){
+        List<ModifierNode> anns = new ArrayList<>();
+        for(ModifierNode mod : mods){
+            if(mod.getName().contains("@")){
+                anns.add(mod);
+            }
+        }
+        return anns;
     }
 
     //type safety warning is annoying

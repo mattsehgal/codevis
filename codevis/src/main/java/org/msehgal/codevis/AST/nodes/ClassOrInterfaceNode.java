@@ -10,6 +10,7 @@ public class ClassOrInterfaceNode extends DeclarationNode {
     private List<MethodNode> methods = new ArrayList<>();
     private List<ClassOrInterfaceNode> interfaces = new ArrayList<>();
     private ClassOrInterfaceNode superclass;
+    private PackageNode paccage;
 
     public ClassOrInterfaceNode(Node parent, String name) {
         super(parent, name);
@@ -26,6 +27,14 @@ public class ClassOrInterfaceNode extends DeclarationNode {
 
     public void addInterfaces(List<ClassOrInterfaceNode> interfaces){
         interfaces.forEach(interf->addInterface(interf));
+    }
+
+    public PackageNode getPackage() {
+        return this.paccage;
+    }
+
+    public void setPackage(PackageNode paccage){
+        this.paccage = paccage;
     }
 
     public ClassOrInterfaceNode getSuperclass() {

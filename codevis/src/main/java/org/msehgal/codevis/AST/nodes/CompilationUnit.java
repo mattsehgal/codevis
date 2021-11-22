@@ -25,6 +25,10 @@ public class CompilationUnit extends Node {
         return this.packageDeclaration;
     }
 
+    public void setPackageDeclaration(PackageNode pack) {
+        this.packageDeclaration = pack;
+    }
+
     public void setClassOrInterfaceDeclaration(ClassOrInterfaceNode node){
         this.classOrInterfaceDeclaration = node;
         addChildren(node);
