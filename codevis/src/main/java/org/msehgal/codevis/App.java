@@ -15,7 +15,7 @@ import java.io.IOException;
 // @Controller
 public class App {
 
-	final static String PATH = "C:/Users/matt/codevis/codevis/src/main/java/org/msehgal/codevis/util/TestSourceCode";
+	final static String PATH = "C:/Users/matt/codevis/codevis/src/main/java/org/msehgal/codevis/util/TestSourceCode/TestMain.java";
 	public static void main(String[] args) throws IOException {
 		//SpringApplication.run(App.class, args);
 		printTest();
@@ -30,8 +30,8 @@ public class App {
 
 	private static void printTest() {
 		BasicVisualizer vis = new BasicVisualizer(PATH);
-		vis.getJSON();
-		vis.printDirectoriesJSON();
+		//vis.getJSON();
+		//vis.printDirectoriesJSON();
 	}
 
 }

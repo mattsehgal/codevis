@@ -6,21 +6,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.antlr.v4.runtime.tree.TerminalNodeImpl;
+import org.apache.tomcat.util.digester.Rule;
 import org.msehgal.codevis.antlr.Java9Lexer;
 import org.msehgal.codevis.antlr.Java9Parser;
 
 import org.msehgal.codevis.AST.nodes.*;
 import org.msehgal.codevis.antlr.Java9BaseListener;
+import org.msehgal.codevis.antlr.Java9Parser.BlockContext;
+import org.msehgal.codevis.antlr.Java9Parser.BlockStatementContext;
+import org.msehgal.codevis.antlr.Java9Parser.BlockStatementsContext;
 import org.msehgal.codevis.antlr.Java9Parser.ClassMemberDeclarationContext;
 import org.msehgal.codevis.antlr.Java9Parser.CompilationUnitContext;
+import org.msehgal.codevis.antlr.Java9Parser.ExpressionContext;
+import org.msehgal.codevis.antlr.Java9Parser.ExpressionStatementContext;
 import org.msehgal.codevis.antlr.Java9Parser.FormalParameterContext;
 import org.msehgal.codevis.antlr.Java9Parser.FormalParameterListContext;
+import org.msehgal.codevis.antlr.Java9Parser.IfThenStatementContext;
 import org.msehgal.codevis.antlr.Java9Parser.InterfaceMemberDeclarationContext;
+import org.msehgal.codevis.antlr.Java9Parser.MethodInvocationContext;
 import org.msehgal.codevis.antlr.Java9Parser.NormalClassDeclarationContext;
 import org.msehgal.codevis.antlr.Java9Parser.NormalInterfaceDeclarationContext;
 import org.msehgal.codevis.antlr.Java9Parser.PackageDeclarationContext;
@@ -54,6 +64,72 @@ public class ASTListener extends Java9BaseListener {
         String name = ctx.getText().replaceFirst("package", "");
         this.compilationUnit.setPackageDeclaration(new PackageNode(this.root, name));
     }
+
+    public static void qtest(String name, String body){
+        System.out.println("\nENTERING:"+name);
+        System.out.println("\t"+body);
+    }
+
+    @Override
+    public void enterBlockStatements(BlockStatementsContext ctx){
+        String name = "block";
+        String body = ctx.getText();
+        qtest(name, body);
+        //printContexts(ctx);
+        BodyNode node = new BodyNode(this.root, ctx);
+        this.root.setBody(node);
+    }
+
+    @Override 
+    public void enterMethodInvocation(MethodInvocationContext ctx){
+        String name = "methodInvoc";
+        String body = ctx.getText();
+        qtest(name, body);
+        RuleContext rctx = ctx;
+        while(rctx.parent != null){
+            System.out.println(rctx.parent.getClass().getSimpleName()+" "+rctx.parent.getChildCount());
+            rctx = rctx.parent;
+        }
+    }
+
+    public String getDeepestContext(ParseTree ctx){
+        while(ctx.getChildCount() > 0){
+            if(ctx.getChild(0) instanceof TerminalNodeImpl) break;
+            ctx = ctx.getChild(0);
+        }
+        return ctx.getClass().getSimpleName();
+    }
+
+    public void printContexts(ParseTree ctx){
+        System.out.println("CONTEXTS");
+        while(ctx.getChildCount() > 0){
+            System.out.println(ctx.getClass().getSimpleName());
+            ctx = ctx.getChild(0);
+        }
+    }
+
+    // @Override
+    // public void enterExpression(ExpressionContext ctx){
+    //     String name = "exp";
+    //     String body = ctx.getText();
+    //     qtest(name, body);
+    // }
+
+    // @Override
+    // public void enterExpressionStatement(ExpressionStatementContext ctx){
+    //     String name = "expStatement";
+    //     String body = ctx.statementExpression().getText();
+    //     qtest(name, body);
+    // }
+
+    // @Override
+    // public void enterIfThenStatement(IfThenStatementContext ctx){
+    //     String name = "ifStatement";
+    //     String body = ctx.getText();
+    //     System.out.println(ctx.expression().getText()+"\n"+ctx.statement().getText());
+    //     qtest(name, body);
+    // }
+
 
     @Override
     public void enterNormalClassDeclaration(NormalClassDeclarationContext ctx) {

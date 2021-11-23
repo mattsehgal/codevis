@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Queue;
 
 import org.json.simple.JSONObject;
-
+import org.msehgal.codevis.AST.nodes.BlockNode;
 import org.msehgal.codevis.AST.nodes.ClassOrInterfaceNode;
 import org.msehgal.codevis.AST.nodes.CompilationUnit;
 import org.msehgal.codevis.AST.nodes.FieldNode;
@@ -91,6 +91,10 @@ public class AST {
         }
         JSONObject methods = new JSONObject();
         int methodCount = 0;
+
+        for(BlockNode block : coi.getBody().getBlocks()){
+            //TODO BODY
+        }
         for(MethodNode method : coi.getMethods()){
             JSONObject methodJSON = new JSONObject();
             methodJSON.put("name", method.getName().toString());

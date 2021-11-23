@@ -71,9 +71,9 @@ public class BasicVisualizer {
     @SuppressWarnings("unchecked")
     public void printDirectoriesJSON(){
         JSONArray json = new JSONArray();
-        for(DirTree dir : this.directories){
+        for(DirTree dir : this.directories)
             json.add(dir.toJSON());
-            System.out.println(dir.toJSON());}
+            //System.out.println(dir.toJSON());
 
         System.out.println(json.toJSONString());
     }
