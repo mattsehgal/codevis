@@ -4,28 +4,27 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Node {
-    private String name;
+    
+    private String text;
+    
     private Node parent;
+    
     private ArrayList<Node> children = new ArrayList<>();
 
     public Node(Node parent){
         this.parent = parent;
     }
 
-    public Node(Node parent, String name){
+    public Node(Node parent, String text){
         this(parent);
-        this.name = name;
-    }
-    
-    public String getName() {
-        return this.name;
+        this.text = text;
     }
 
-    public Node getParent(){
-        return this.parent;
+    public boolean addChild(Node child){
+        return this.children.add(child);
     }
 
-    protected boolean addChildren(Node... children){
+    public boolean addChildren(Node... children){
         return this.children.addAll(Arrays.asList(children));
     }
 
@@ -33,9 +32,17 @@ public class Node {
         return this.children;
     }
 
+    public String getText() {
+        return this.text;
+    }
+
+    public Node getParent(){
+        return this.parent;
+    }
+
     @Override
     public String toString(){
-        return this.name != null ? 
-            this.name : this.getClass().getName();
+        return this.text != null ? 
+            this.text : this.getClass().getSimpleName();
     }
 }

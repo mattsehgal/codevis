@@ -8,6 +8,10 @@ public class DeclarationNode extends Node {
     private List<AnnotationNode> annotations = new ArrayList<>();
     private List<ModifierNode> modifiers = new ArrayList<>();
 
+    public DeclarationNode(Node parent){
+        super(parent);
+    }
+
     public DeclarationNode(Node parent, String name) {
         super(parent, name);
     }

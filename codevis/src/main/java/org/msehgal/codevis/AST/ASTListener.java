@@ -13,28 +13,12 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
-import org.apache.tomcat.util.digester.Rule;
 import org.msehgal.codevis.antlr.Java9Lexer;
 import org.msehgal.codevis.antlr.Java9Parser;
 
 import org.msehgal.codevis.AST.nodes.*;
 import org.msehgal.codevis.antlr.Java9BaseListener;
-import org.msehgal.codevis.antlr.Java9Parser.BlockContext;
-import org.msehgal.codevis.antlr.Java9Parser.BlockStatementContext;
-import org.msehgal.codevis.antlr.Java9Parser.BlockStatementsContext;
-import org.msehgal.codevis.antlr.Java9Parser.ClassMemberDeclarationContext;
-import org.msehgal.codevis.antlr.Java9Parser.CompilationUnitContext;
-import org.msehgal.codevis.antlr.Java9Parser.ExpressionContext;
-import org.msehgal.codevis.antlr.Java9Parser.ExpressionStatementContext;
-import org.msehgal.codevis.antlr.Java9Parser.FormalParameterContext;
-import org.msehgal.codevis.antlr.Java9Parser.FormalParameterListContext;
-import org.msehgal.codevis.antlr.Java9Parser.IfThenStatementContext;
-import org.msehgal.codevis.antlr.Java9Parser.InterfaceMemberDeclarationContext;
-import org.msehgal.codevis.antlr.Java9Parser.MethodInvocationContext;
-import org.msehgal.codevis.antlr.Java9Parser.NormalClassDeclarationContext;
-import org.msehgal.codevis.antlr.Java9Parser.NormalInterfaceDeclarationContext;
-import org.msehgal.codevis.antlr.Java9Parser.PackageDeclarationContext;
-import org.msehgal.codevis.antlr.Java9Parser.VariableDeclaratorContext;
+import org.msehgal.codevis.antlr.Java9Parser.*;
 
 public class ASTListener extends Java9BaseListener {
     private CompilationUnit compilationUnit = null;
@@ -71,24 +55,41 @@ public class ASTListener extends Java9BaseListener {
     }
 
     @Override
-    public void enterBlockStatements(BlockStatementsContext ctx){
-        String name = "block";
-        String body = ctx.getText();
-        qtest(name, body);
-        //printContexts(ctx);
-        BodyNode node = new BodyNode(this.root, ctx);
-        this.root.setBody(node);
+    public void enterBlockStatement(BlockStatementContext ctx){
+        // qtest(name, body);
+        //printChildContexts(ctx);
+        //printContextText(ctx);
     }
 
-    @Override 
-    public void enterMethodInvocation(MethodInvocationContext ctx){
-        String name = "methodInvoc";
-        String body = ctx.getText();
-        qtest(name, body);
-        RuleContext rctx = ctx;
-        while(rctx.parent != null){
-            System.out.println(rctx.parent.getClass().getSimpleName()+" "+rctx.parent.getChildCount());
-            rctx = rctx.parent;
+    @Override
+    public void enterLocalVariableDeclarationStatement(LocalVariableDeclarationStatementContext ctx){
+        printContextText(ctx);
+    }
+
+    // @Override
+    // public void enterStatement(StatementContext ctx){
+    //     printContextText(ctx);
+    // }
+
+    // @Override 
+    // public void enterMethodInvocation(MethodInvocationContext ctx){
+    //     String name = "methodInvoc";
+    //     String body = ctx.getText();
+    //     qtest(name, body);
+    //     RuleContext rctx = ctx;
+    //     while(rctx.parent != null){
+    //         System.out.println(rctx.parent.getClass().getSimpleName()+" "+rctx.parent.getChildCount());
+    //         rctx = rctx.parent;
+    //     }
+    // }
+
+    public void printContextText(ParseTree ctx){
+        for(int i=0; i<ctx.getChildCount(); i++){
+            ParseTree child = ctx.getChild(i);
+            System.out.println("ctx: "+child.getClass().getSimpleName()+
+            "\n\tcontent: "+child.getText()+
+            "\n\t\tparent: "+child.getParent().getClass().getSimpleName()+"\n");
+            printContextText(child);
         }
     }
 
@@ -100,11 +101,29 @@ public class ASTListener extends Java9BaseListener {
         return ctx.getClass().getSimpleName();
     }
 
-    public void printContexts(ParseTree ctx){
-        System.out.println("CONTEXTS");
-        while(ctx.getChildCount() > 0){
+    public void printChildContexts(ParseTree ctx){
+        System.out.println("\nCCONTEXTS: "+ctx.getText());
+        for(int j=0; j<ctx.getChildCount(); j++){
+            ParseTree tx = ctx.getChild(j);
+            System.out.println("child: "+tx.getClass().getSimpleName());
+            for(int i=0; i<tx.getChildCount(); i++){
+                ParseTree x = tx.getChild(i);
+                System.out.println("child child: "+x.getClass().getSimpleName());
+            }
+            System.out.println("first children: ");
+            while(ctx.getChildCount()>0){
+                System.out.println(ctx.getChild(0).getClass().getSimpleName());
+                ctx = ctx.getChild(0);
+            }
+            System.out.print("\n");    
+        }
+    }
+
+    public void printParentContexts(ParseTree ctx){
+        System.out.println("\nPCONTEXTS: "+ctx.getText());
+        while(ctx.getParent() != null){
             System.out.println(ctx.getClass().getSimpleName());
-            ctx = ctx.getChild(0);
+            ctx = ctx.getParent();
         }
     }
 
@@ -312,6 +331,14 @@ public class ASTListener extends Java9BaseListener {
                         .identifier()
                         .getText();
         MethodNode methodNode = new MethodNode(this.root, name);
+        if(ctx.methodDeclaration().methodBody().block().blockStatements() != null){
+            List<BlockStatementContext> blocks = ctx.methodDeclaration()
+                                                    .methodBody()
+                                                    .block()
+                                                    .blockStatements()
+                                                    .blockStatement();
+            makeBlockNodes(blocks, methodNode);
+        }
         modifierContextsToStrings(ctx.methodDeclaration()
                                     .methodModifier()).forEach(mod->{
                                         if(mod.contains("@"))
@@ -338,6 +365,12 @@ public class ASTListener extends Java9BaseListener {
                         .identifier()
                         .getText();
         MethodNode methodNode = new MethodNode(this.root, name);
+        List<BlockStatementContext> blocks = ctx.interfaceMethodDeclaration()
+                                                .methodBody()
+                                                .block()
+                                                .blockStatements()
+                                                .blockStatement();
+        blocks.forEach(block->methodNode.addBlock(new BlockNode(methodNode, block.getText())));
         methodNode.addModifiers(modifierContextsToStrings(ctx.interfaceMethodDeclaration()
                                                             .interfaceMethodModifier()));
         FormalParameterListContext params = ctx.interfaceMethodDeclaration()
@@ -351,6 +384,34 @@ public class ASTListener extends Java9BaseListener {
                                     .result()
                                     .getText());
         return methodNode;
+    }
+
+    private void makeBlockNodes(List<BlockStatementContext> blocks, MethodNode method){
+        List<BlockNode> blockNodes = new ArrayList<>();
+        for(BlockStatementContext block : blocks){
+            boolean foundType = false;
+            ParseTree ctx = (ParseTree) block;
+            BlockNode blockNode = new BlockNode(method, ctx.getText());
+            while(!foundType){
+                if(ctx instanceof AssignmentContext){
+                    blockNode.setType(BlockType.ASSN);
+                    foundType = true;
+                } else if(ctx instanceof IfThenStatementContext){
+                    blockNode.setType(BlockType.COND);
+                    foundType = true;
+                } else if(ctx instanceof LocalVariableDeclarationStatementContext){
+                    blockNode.setType(BlockType.DEC);
+                    foundType = true;
+                } else if(ctx instanceof MethodInvocationContext){
+                    blockNode.setType(BlockType.INVOC);
+                    foundType = true;
+                } else if(ctx instanceof TerminalNodeImpl){
+                    break;
+                }
+                ctx = ctx.getChild(0);
+            }
+            method.addBlock(blockNode);
+        }
     }
 
     private List<List<String>> parameterContextsToStrings(FormalParameterListContext params){

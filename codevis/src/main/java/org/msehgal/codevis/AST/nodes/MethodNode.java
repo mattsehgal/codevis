@@ -5,11 +5,36 @@ import java.util.List;
 
 public class MethodNode extends DeclarationNode {
 
+    private ModifierNode modifier;
+    private String id;
+    private BodyNode body = new BodyNode(this);
     private List<ParameterNode> parameters = new ArrayList<>();
     private TypeNode returnType = null;
+    //new return type
+    private String result;
+
+    public MethodNode(Node parent){
+        super(parent);
+    }
 
     public MethodNode(Node parent, String name) {
         super(parent, name);
+    }
+
+    public void addBlock(BlockNode block){
+        this.body.addBlock(block);
+    }
+
+    public List<BlockNode> getBlocks(){
+        return this.body.blocks;
+    }
+
+    public BodyNode getBody(){
+        return this.body;
+    }
+
+    public void setBody(BodyNode body){
+        this.body = body;
     }
 
     public List<ParameterNode> getParameters(){
@@ -18,6 +43,14 @@ public class MethodNode extends DeclarationNode {
 
     public TypeNode getReturnType(){
         return this.returnType;
+    }
+
+    public String getResult(){
+        return this.result;
+    }
+
+    public void setResult(String result){
+        this.result = result;
     }
 
     public void addParameter(List<String> param){
@@ -35,6 +68,14 @@ public class MethodNode extends DeclarationNode {
     
     public void addParameters(List<List<String>> params){
         params.forEach(param->addParameter(param));
+    }
+
+    public String getId(){
+        return this.id;
+    }
+
+    public void setId(String id){
+        this.id = id;
     }
 
     public void setReturnType(String returnType){

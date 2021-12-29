@@ -5,6 +5,10 @@ public class VariableNode extends DeclarationNode {
     private TypeNode type;
     private Object value;
 
+    public VariableNode(Node parent){
+        super(parent);
+    }
+
     public VariableNode(Node parent, String type, String name) {
         super(parent, name);
         this.type = new TypeNode(this, type);

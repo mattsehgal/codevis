@@ -50,7 +50,7 @@ public class ASTForest {
         for(AST tree : this.trees){
             ClassOrInterfaceNode coi = tree.getRoot().getClassOrInterfaceDeclaration();
             if(!tree.isContexted()){
-                String name = coi.getSuperclass().getName();
+                String name = coi.getSuperclass().getText();
                 coi.setSuperclass(get(name)
                                                         .getRoot()
                                                         .getClassOrInterfaceDeclaration());

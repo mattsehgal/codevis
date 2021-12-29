@@ -3,8 +3,6 @@ package org.msehgal.codevis.AST.nodes;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.http.StreamingHttpOutputMessage.Body;
-
 public class ClassOrInterfaceNode extends DeclarationNode {
 
     private List<DeclarationNode> members = new ArrayList<>();
@@ -12,7 +10,6 @@ public class ClassOrInterfaceNode extends DeclarationNode {
     private List<MethodNode> methods = new ArrayList<>();
     private List<ClassOrInterfaceNode> interfaces = new ArrayList<>();
     private ClassOrInterfaceNode superclass;
-    private BodyNode body;
     private PackageNode paccage;
 
     public ClassOrInterfaceNode(Node parent, String name) {
@@ -40,14 +37,6 @@ public class ClassOrInterfaceNode extends DeclarationNode {
         this.paccage = paccage;
     }
 
-    public BodyNode getBody(){
-        return this.body;
-    }
-
-    public void setBody(BodyNode body){
-        this.body = body;
-    }
-
     public ClassOrInterfaceNode getSuperclass() {
         return this.superclass;
     }
@@ -63,7 +52,7 @@ public class ClassOrInterfaceNode extends DeclarationNode {
 
     public void addField(FieldNode field){
         this.fields.add(field);
-        this.members.add(field);
+        //this.members.add(field);
         addChildren(field);
     }
 

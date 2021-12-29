@@ -45,7 +45,7 @@ public class AST {
             }
 
             //this is fine
-            if(name.equals(node.getName()))
+            if(name.equals(node.getText()))
                 return node;
             else if(!node.getChildren().isEmpty()){
                 queue.addAll(node.getChildren());
@@ -59,13 +59,13 @@ public class AST {
     public JSONObject toJSON(){
         JSONObject json = new JSONObject();
         CompilationUnit cu = this.root;
-        json.put("compilation unit", cu.getName().toString());
+        json.put("compilation unit", cu.getText().toString());
         json.put("package", cu.getPackageDeclaration().toString());
         json.put("imports", listToJSON(cu.getImports()));
 
         ClassOrInterfaceNode coi = cu.getClassOrInterfaceDeclaration();
         JSONObject dec = new JSONObject();
-        dec.put("name", coi.getName().toString());
+        dec.put("name", coi.getText().toString());
         //TODO PRIO1 - annotation name not showing in json
         // List<ModifierNode> cAnns = separateAnnotations(coi.getModifiers());
         // if(!cAnns.isEmpty()) coi.getModifiers().removeAll(cAnns);
@@ -74,14 +74,14 @@ public class AST {
         dec.put("interfaces", listToJSON(coi.getInterfaces()));
         //TODO PRIO1 - this null check needs to be removed once superclass parsing is done
         if(coi.getSuperclass() != null)
-            dec.put("superclass", coi.getSuperclass().getName().toString());
+            dec.put("superclass", coi.getSuperclass().getText().toString());
         
         JSONObject members = new JSONObject();
         JSONObject fields = new JSONObject();
         int fieldCount = 0;
         for(FieldNode field : coi.getFields()){
             JSONObject fieldJSON = new JSONObject();
-            fieldJSON.put("name", field.getName().toString());
+            fieldJSON.put("name", field.getText().toString());
             fieldJSON.put("modifiers", listToJSON(field.getModifiers()));
             fieldJSON.put("type", field.getType().toString());
             fieldJSON.put("value", field.getValue());
@@ -91,24 +91,21 @@ public class AST {
         }
         JSONObject methods = new JSONObject();
         int methodCount = 0;
-
-        for(BlockNode block : coi.getBody().getBlocks()){
-            //TODO BODY
-        }
         for(MethodNode method : coi.getMethods()){
             JSONObject methodJSON = new JSONObject();
-            methodJSON.put("name", method.getName().toString());
+            methodJSON.put("name", method.getText().toString());
             // List<ModifierNode> mAnns = separateAnnotations(method.getModifiers());
             // if(!mAnns.isEmpty()) method.getModifiers().removeAll(mAnns);
             methodJSON.put("annotations", listToJSON(method.getAnnotations()));
             methodJSON.put("modifiers", listToJSON(method.getModifiers()));
+            methodJSON.put("body", listToJSON(method.getBlocks()));
             methodJSON.put("return type", method.getReturnType().toString());
             
             JSONObject params = new JSONObject();
             int paramCount = 0;
             for(ParameterNode param : method.getParameters()){
                 JSONObject paramJSON = new JSONObject();
-                paramJSON.put("name", param.getName().toString());
+                paramJSON.put("name", param.getText().toString());
                 paramJSON.put("type", param.getType().toString());
                 paramJSON.put("value", param.getValue());
                 params.put(paramCount, paramJSON);

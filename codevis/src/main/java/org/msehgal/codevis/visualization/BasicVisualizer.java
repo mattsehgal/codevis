@@ -36,6 +36,10 @@ public class BasicVisualizer {
         return null;
     }
 
+    public ASTForest getForest(){
+        return this.forest;
+    }
+
     @SuppressWarnings("unchecked")
     public File getJSON(){
         JSONArray master = new JSONArray();

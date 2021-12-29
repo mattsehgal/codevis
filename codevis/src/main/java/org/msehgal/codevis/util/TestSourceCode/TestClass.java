@@ -20,4 +20,8 @@ public class TestClass extends TestSuperClass implements TestInterface {
         if(paramC) return paramA+paramB;
         else return "";
     }
+
+    public int getFieldA(){
+        return this.fieldA;
+    }
 }
