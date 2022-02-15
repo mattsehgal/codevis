@@ -5,36 +5,28 @@ import org.msehgal.codevis.AST.nodes.statements.StatementNode;
 import org.msehgal.codevis.AST.nodes.statements.VariableDeclarationNode;
 import org.msehgal.codevis.AST.nodes.statements.expressions.AssignmentNode;
 import org.msehgal.codevis.AST.nodes.statements.expressions.AtomNode;
-import org.msehgal.codevis.AST.nodes.statements.expressions.ExpressionNode;
 import org.msehgal.codevis.antlr.Java9Parser;
-import org.msehgal.codevis.antlr.Java9Parser.AssignmentExpressionContext;
 import org.msehgal.codevis.antlr.Java9Parser.ClassDeclarationContext;
-import org.msehgal.codevis.antlr.Java9Parser.ExpressionStatementContext;
-import org.msehgal.codevis.antlr.Java9Parser.LocalVariableDeclarationStatementContext;
-import org.msehgal.codevis.antlr.Java9Parser.OrdinaryCompilationContext;
-import org.msehgal.codevis.antlr.Java9Parser.StatementContext;
-import org.msehgal.codevis.antlr.Java9Parser.StatementWithoutTrailingSubstatementContext;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.RuleContext;
+import org.msehgal.codevis.antlr.Java9Parser.VariableDeclaratorContext;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.TerminalNodeImpl;
-import org.antlr.v4.runtime.tree.pattern.ParseTreePattern;
 import org.antlr.v4.runtime.tree.xpath.XPath;
 import org.msehgal.codevis.antlr.Java9Lexer;
 
+@SuppressWarnings("rawtypes")
 public class ASTBuilder {
-    
+
     private Path path;
 
     private Java9Parser parser;
@@ -42,6 +34,13 @@ public class ASTBuilder {
     private ParseTree tree;
 
     private CompilationUnit currentRoot;
+    
+    //I hate this but needed for paramResolver
+    private ClassNode currentClassDec;
+
+    private Map<String, Class> nameMap = new HashMap<>();
+
+    private Map<String, Class> candidateClassMap = new HashMap<>();
      
     public ASTBuilder(Path path){
         this.path = path;
@@ -63,6 +62,7 @@ public class ASTBuilder {
 
     public AST buildAST(){
         CompilationUnit cu = getCompilationUnit(this.tree);
+        //initCandidateClassMap("");
         System.out.println("CU: "+cu.getId());
         ClassNode clazz = cu.getClassDeclaration();
         System.out.println("\tCLASS: "+clazz.getId());
@@ -95,7 +95,7 @@ public class ASTBuilder {
     private ParseTree getNodeFromXPath(String xpath, ParseTree root){
         List<ParseTree> list = new ArrayList<>();
         Collection<ParseTree> coll = XPath.findAll(root, xpath, parser);
-        for(ParseTree t : coll){
+        for(ParseTree t : coll){  
             list.add(t);
         }
         //return XPath.findAll(root, xpath, parser).toArray(new ParseTree[1])[0];
@@ -119,7 +119,7 @@ public class ASTBuilder {
         compUnit.setImports(getImports(compUnit, compUnitTree));
         compUnit.setClassDeclaration(getClassDeclaration(compUnit, compUnitTree));
 
-        
+        initCandidateClassMap();
         // ...
         return compUnit;
     }
@@ -154,8 +154,9 @@ public class ASTBuilder {
         // classTree path: //compUnit/ordinaryCompilation//typeDeclaration/classDeclaration/normalClassDeclaration
         classDec.setId(getTextFromXPath(XPaths.CLASS_ID.x, classTree));
         classDec.addFields(getFields(classDec, classTree));
+        this.currentClassDec = classDec;
         classDec.addMethods(getMethods(classDec, classTree));
-
+        
         return classDec;
     }
 
@@ -167,6 +168,8 @@ public class ASTBuilder {
             field.setId(getTextFromXPath(XPaths.FIELD_ID.x, fieldTree));
             field.setType(getTextFromXPath(XPaths.FIELD_TYPE.x, fieldTree));
             fields.add(field);
+
+            //this.currentClassDec.addField(field);
         }
 
         return fields;
@@ -215,21 +218,6 @@ public class ASTBuilder {
 
     private BlockType getBlockType(ParseTree blockTree){
         ParseTree blockType = getNodeFromXPath(XPaths.BLOCK_TYPE.x, blockTree);
-        // if(blockType instanceof LocalVariableDeclarationStatementContext){
-        //     return BlockType.VAR_DEC;
-        // } else if(blockType instanceof ClassDeclarationContext){
-        //     return BlockType.CLASS_DEC;
-        // } else if(blockType instanceof StatementContext){
-        //     blockType = blockType.getChild(0);
-        //     if(blockType instanceof StatementWithoutTrailingSubstatementContext){
-        //         blockType = blockType.getChild(0);
-        //         if(blockType instanceof ExpressionStatementContext){
-
-        //         }
-        //     }
-        // }else {
-        //     return BlockType.STATEMENT;
-        // }
 
         while(blockType != null){
             String[] name = blockType.getClass().getName().split("\\.");
@@ -303,27 +291,166 @@ public class ASTBuilder {
                 System.out.println("ASSN: "+assignmentTree.getChild(i).getText());
             }
         }
+        //TODO add assns to symtab
         return node;
     }
 
-    private VariableDeclarationNode varDecHandler(ParseTree varDecTree, BlockNode block){
-        VariableDeclarationNode node = new VariableDeclarationNode(block);
-        if(varDecTree == null){return node;}
-        varDecTree = varDecTree.getChild(0);
-        //unann type context
-        String className = getQualifiedNameFromImports(varDecTree.getChild(0).getText());
-        node.setClassName(new AtomNode(node, className));
-        //vardeclist > vardeclatorctx
-        varDecTree = varDecTree.getChild(1).getChild(0);
-        node.setName(new AtomNode(node, varDecTree.getChild(0).getText()));
+    private VariableDeclarationNode varDecHandler(ParseTree varDecTree, BlockNode block) {
+        VariableDeclarationNode node = treeToNode(varDecTree, block);
+        String className = node.getName().getAtom();
+        VariableDeclaratorContext ctx = (VariableDeclaratorContext) 
+                                        varDecTree.getChild(1).getChild(0);
         //TODO parse params
-        //TODO idk where to put this but think about ast ordering(op, l, r)
+        //TODO idk where to put this but think about ast exp ordering(op, l, r)
         String param = (getTextFromXPath("//variableInitializer//argumentList", varDecTree)!=null) ? 
                         getTextFromXPath("//variableInitializer//argumentList", varDecTree) : 
                         getTextFromXPath("//expression", varDecTree);
-        node.setParams(new AtomNode(node, param.replace("\"","")));
-        System.out.println("VARDECHANDLER: "+node.getClassName()+" "+node.getName());
+        this.currentRoot.setClassDeclaration(this.currentClassDec);
+        ParamResolver pRes = new ParamResolver(block, this.currentRoot);
+        AtomNode[] paramNodes = pRes.resolve(param);
+        node.setParams(paramNodes);
+        // node.setParams(new AtomNode(node, param.replace("\"","")));
+        // System.out.println("VARDECHANDLER: "+node.getClassName()+" "+node.getName());
         return node;
+    }
+
+    private VariableDeclarationNode treeToNode(ParseTree varDecTree, BlockNode block){
+        VariableDeclarationNode node = new VariableDeclarationNode(block);
+        varDecTree = varDecTree.getChild(0);
+        //unann type context
+        String unannTypeCtxName = varDecTree.getChild(0).getText();
+        String className = getQualifiedNameFromImports(unannTypeCtxName);
+        className = convertIfJavaLangClass(className);
+        node.setClassName(new AtomNode(node, className));
+        //vardeclist > vardeclatorctx
+        varDecTree = varDecTree.getChild(1).getChild(0);
+        String refName = varDecTree.getChild(0).getText();
+        node.setName(new AtomNode(node, refName));
+
+        //VariableDeclaratorContext ctx = (VariableDeclaratorContext) varDecTree;
+        updateNameMap(refName, className);
+        //param solve here?
+        return node;
+    }
+
+    private void updateNameMap(String rName, String cName){
+        try{
+            Class c = Class.forName(cName);
+            this.nameMap.put(rName, c);
+        } catch (ClassNotFoundException e){
+
+        }
+    }
+
+    private String[] parseParams(String params){
+        //check for anon classes
+        //split on all ',' not in '()'
+        String[] parsedParams = params.split(",(?![^()]*+\\))");
+        //split on ,
+        return null;
+    }
+
+    private Class resolveParam(String param){
+        String className = param;
+        //id anon obj, parse out class name
+        if(param.contains("new")){
+            int newIdx = param.indexOf("new")+3;
+            int parenIdx = param.indexOf("(");
+            className = param.substring(newIdx, parenIdx);
+        }
+        Class clazz = resolveParamClass(className, param);
+        //ret class[]?
+        return clazz;
+    }
+
+    private Class resolveParamClass(String className, String param){
+        //check&return if direct ref
+        if(param.equals(className)){
+            if(candidateClassMap.containsKey(className)){
+                return candidateClassMap.get(className);
+            }
+        }
+        //anon class
+        int lp = param.indexOf("(")+1;
+        int rp = param.indexOf(")");
+        String[] anonParams = param.strip()
+                                    .substring(lp, rp)
+                                    .split(",");
+
+        Class[] classes = resolveAnonParamsClasses(anonParams);
+        //^ handle array of param classes
+
+
+        return resolveLiteralType(param);
+    }
+
+    private Class[] resolveAnonParamsClasses(String[] params){
+        Class[] classes = new Class[params.length];
+        for(int i=0; i<params.length; i++){
+            classes[i] = resolveParam(params[i]);
+        }
+        return classes;
+    }
+
+    private Class resolveLiteralType(String param){
+        //don't handle char as they are string atoms?
+        try{
+        if(param.equals("null")){
+            //ret null
+            return null;
+        } else if(param.contains("\"")){
+            //ret string
+            return Class.forName("java.lang.String");
+        } else if(param.equals("true") || param.equals("false")){
+            //ret bool
+            return Class.forName("java.lang.Boolean");
+        } else {
+            try{
+                Integer.parseInt(param);
+                //ret int
+                return Class.forName("java.lang.Integer");
+            } catch (NumberFormatException intE){
+                try{
+                    Double.parseDouble(param);
+                    //ret double
+                    return Class.forName("java.lang.Double");
+                } catch (NumberFormatException doubleE){
+                    //ret null
+                }
+            }
+        }
+        } catch (ClassNotFoundException e){
+
+        }   
+        //ret null
+        return null;
+    }
+
+    private AtomNode[] paramsToAtom(Class... classes){
+        //TODO implement
+        return null;
+    }
+
+    private void initCandidateClassMap(){
+        for(ImportNode i : this.currentRoot.getImports()){
+            String qName = i.getQualifiedName();
+            String name = qName.substring(qName.lastIndexOf('.')+1, qName.length());
+            try {
+                candidateClassMap.put(name, Class.forName(qName));
+            } catch (ClassNotFoundException e) {}
+
+        }
+    }
+
+    private void checkJavaLang(){
+
+    }
+
+    private String convertIfJavaLangClass(String className){
+        if(className.equals("String")){
+            return "java.lang."+className;
+        }
+        return className;
     }
 
     private String getQualifiedNameFromImports(String name){
@@ -333,6 +460,14 @@ public class ASTBuilder {
             }
         }
         return name;
+    }
+
+    private Class getClassFromName(String name){
+        try {
+            return Class.forName(name);
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
     }
 
     //called in getblocks

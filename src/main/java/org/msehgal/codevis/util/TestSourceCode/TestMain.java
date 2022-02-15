@@ -6,11 +6,13 @@ import org.msehgal.codevis.AST.nodes.Node;
 public class TestMain {
     
     // private int initField = 1;
-
+    private static String testField = "testFieldString";
     // private char A;
     public static void main(String[] args){
         //TestClass test = new TestClass();
-        Node testNode = new Node(null);
+        //String testNodeName = "testNodeName";
+        //Node testNode = new Node(new Node(null, "test1"), testField);
+        Node testNode = new Node(null, testField);
         String testString = "A";
         testString = "B";
         //test.fieldA = 2;

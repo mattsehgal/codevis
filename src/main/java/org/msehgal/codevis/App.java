@@ -20,7 +20,7 @@ import java.nio.file.Paths;
 // @Controller
 public class App {
 
-	final static String PATH = "C:/Users/matt/Desktop/codevis/codevis/src/main/java/org/msehgal/codevis/util/TestSourceCode/TestMain.java";
+	final static String PATH = "C:/Users/matt/codevis/src/main/java/org/msehgal/codevis/util/TestSourceCode/TestMain.java";
 	public static void main(String[] args) throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		//SpringApplication.run(App.class, args);
 		//printTest();

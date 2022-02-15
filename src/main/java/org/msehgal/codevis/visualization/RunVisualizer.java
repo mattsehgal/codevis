@@ -34,7 +34,7 @@ public class RunVisualizer {
         return ast.get("main");
     }
 
-    //RENAME, same as tree method
+    //RENAME, same as tree method name
     public void processTree() throws ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException{
         List<RunTree> runs = new ArrayList<>();
         ASTForest forest = vis.getForest();
@@ -43,6 +43,7 @@ public class RunVisualizer {
             if(ast.getRoot()!=null)
                 ast.getRoot().getClassDeclaration().getMethods().forEach(m->bodies.add(m.getBody()));
         }
+        //TODO change, doesnt need to process every body tree, just as called
         for(BodyNode body : bodies){
             RunTree run = getRunTree(body);
             run.processTree();
@@ -61,7 +62,7 @@ public class RunVisualizer {
             run.setPrevious(prev);
             prev = run;
         }
-        return new RunTree(root);
+        return new RunTree(root, vis.getForest());
     }
 
     private void parseBlock(BlockNode block, RunNode run){
@@ -82,7 +83,7 @@ public class RunVisualizer {
 
     //0:createobj, 1:modifyref
     private StepNode getStep(String[][] res, int type){
-        StepType sType = (type==0) ? StepType.CREATE_OBJ : StepType.MODIFY_REF;
+        StepType sType = (type==0) ? StepType.CREATE_OBJ : StepType.UPDATE_VAL;
         StepNode step = new StepNode(sType);
         step.setResult(res);
         return step;

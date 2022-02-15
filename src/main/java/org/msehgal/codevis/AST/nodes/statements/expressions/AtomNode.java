@@ -8,6 +8,8 @@ public class AtomNode extends ExpressionNode{
 
     Class clazz;
 
+    Object value;
+
     public AtomNode(Node parent){
         super(parent);
     }
@@ -26,7 +28,8 @@ public class AtomNode extends ExpressionNode{
     //return order: name, className
     @Override
     public String[][] evaluate(){
-        return new String[][]{{this.atom, this.clazz.getName()}};
+        return new String[][]{{this.atom}};
+        //return new String[][]{{this.atom, this.clazz.getName()}};
     }
 
     public String[] getContent(){
