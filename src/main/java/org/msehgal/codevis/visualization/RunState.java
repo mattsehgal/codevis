@@ -7,6 +7,9 @@ public class RunState<T> {
 
     private Map<String, RunObject<T>> objects = new HashMap<>();
 
+    //TODO implement line number locator
+    private int loc;
+
     public RunState(){
 
     }

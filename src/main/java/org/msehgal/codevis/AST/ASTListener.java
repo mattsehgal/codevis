@@ -20,6 +20,7 @@ import org.msehgal.codevis.AST.nodes.*;
 import org.msehgal.codevis.antlr.Java9BaseListener;
 import org.msehgal.codevis.antlr.Java9Parser.*;
 
+@Deprecated
 public class ASTListener extends Java9BaseListener {
     private CompilationUnit compilationUnit = null;
     private Path path;

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Queue;
 
 import org.json.simple.JSONObject;
-import org.msehgal.codevis.AST.nodes.BlockNode;
 import org.msehgal.codevis.AST.nodes.ClassOrInterfaceNode;
 import org.msehgal.codevis.AST.nodes.CompilationUnit;
 import org.msehgal.codevis.AST.nodes.FieldNode;
@@ -125,7 +124,6 @@ public class AST {
         return json;
     }
 
-    //type safety warning is annoying
     @SuppressWarnings("unchecked")
     private JSONObject listToJSON(List<? extends Node> list){
         JSONObject json = new JSONObject();

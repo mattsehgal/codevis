@@ -6,7 +6,6 @@ import org.msehgal.codevis.AST.nodes.statements.VariableDeclarationNode;
 import org.msehgal.codevis.AST.nodes.statements.expressions.AssignmentNode;
 import org.msehgal.codevis.AST.nodes.statements.expressions.AtomNode;
 import org.msehgal.codevis.antlr.Java9Parser;
-import org.msehgal.codevis.antlr.Java9Parser.ClassDeclarationContext;
 import org.msehgal.codevis.antlr.Java9Parser.VariableDeclaratorContext;
 
 import java.io.IOException;
@@ -24,6 +23,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.xpath.XPath;
 import org.msehgal.codevis.antlr.Java9Lexer;
 
+
 @SuppressWarnings("rawtypes")
 public class ASTBuilder {
 
@@ -35,18 +35,27 @@ public class ASTBuilder {
 
     private CompilationUnit currentRoot;
     
-    //I hate this but needed for paramResolver
+    // bad but needed for paramResolver :(
     private ClassNode currentClassDec;
 
-    private Map<String, Class> nameMap = new HashMap<>();
+    private Map<String, Map<Object, Class>> nameMap = new HashMap<>();
 
     private Map<String, Class> candidateClassMap = new HashMap<>();
      
+    /**
+     * Builds an Abstract Syntax Tree (AST) by extracting the relevant information from 
+     * ANTLR4's Java 9 Parser. Parsed via ANTLR4's XPath parse tree search.
+     * @param path source file
+     */
     public ASTBuilder(Path path){
         this.path = path;
         setParser();
     }
 
+    /**
+     * Initialize root AST node from the parse tree for the source file,
+     * given from the Java parser.
+     */
     private void setParser() {
         try {
             CharStream input = CharStreams.fromPath(this.path);
@@ -60,38 +69,33 @@ public class ASTBuilder {
         }
     }
 
+    /**
+     * Initializes the CompilationUnit of the source file, 
+     * cascading the creation of all AST nodes.
+     * @return AST of the source file
+     */
     public AST buildAST(){
-        CompilationUnit cu = getCompilationUnit(this.tree);
-        //initCandidateClassMap("");
-        System.out.println("CU: "+cu.getId());
-        ClassNode clazz = cu.getClassDeclaration();
-        System.out.println("\tCLASS: "+clazz.getId());
-        List<FieldNode> fields = clazz.getFields();
-        for(FieldNode field : fields){
-            System.out.println("\t\tFIELD: "+field.getId());
-            System.out.println("\t\t\ttype: "+field.getType());
-        }
-        if(fields.isEmpty()) System.out.println("\t\tNO FIELDS");
-        List<MethodNode> methods = clazz.getMethods();
-        for(MethodNode method : methods){
-            System.out.println("\t\tMETHOD: "+method.getId());
-            System.out.println("\t\t\treturn: "+method.getResult());
-            System.out.println("\t\t\tbody: "+method.getBody().getContent());
-            for(BlockNode block : method.getBody().getBlocks()){
-                System.out.println("\t\t\t\tblock: "+block.getText());
-                System.out.println("\t\t\t\t\ttype: "+block.getType().toString());
-            }
-        }
-        if(methods.isEmpty()) System.out.println("\t\tNO METHODS");
-        return new AST(cu);
+        return new AST(getCompilationUnit(this.tree));
     }
 
+    /**
+     * Gets the text of the given ParseTree node.
+     * @param xpath XPath for the desired node
+     * @param root ParseTree for XPath search
+     * @return text of ParseTree node
+     */
     private String getTextFromXPath(String xpath, ParseTree root){
         return getNodeFromXPath(xpath, root)!=null ? 
                 getNodeFromXPath(xpath, root).getText() :
                 null;
     }
 
+    /**
+     * Get the node specified by the XPath of the given ParseTree.
+     * @param xpath XPath for the desired node
+     * @param root ParseTree for XPath search
+     * @return
+     */
     private ParseTree getNodeFromXPath(String xpath, ParseTree root){
         List<ParseTree> list = new ArrayList<>();
         Collection<ParseTree> coll = XPath.findAll(root, xpath, parser);
@@ -102,6 +106,12 @@ public class ASTBuilder {
         return list.isEmpty() ? null : list.get(0);
     }
 
+    /**
+     * Plural method of getNodeFromXPath.
+     * @param xpath XPath for the desired nodes
+     * @param root ParseTree for the XPath search
+     * @return list of nodes found by XPath in the ParseTree
+     */
     private List<ParseTree> getNodesFromXPath(String xpath, ParseTree root){
         List<ParseTree> nodes = new ArrayList<>();
         for(ParseTree pt : XPath.findAll(root, xpath, this.parser)){
@@ -110,6 +120,11 @@ public class ASTBuilder {
         return nodes;
     }
 
+    /**
+     * Create CompilationUnit, the root node of the AST
+     * @param root
+     * @return
+     */
     private CompilationUnit getCompilationUnit(ParseTree root){
         CompilationUnit compUnit = new CompilationUnit();
         this.currentRoot = compUnit;
@@ -182,7 +197,6 @@ public class ASTBuilder {
             MethodNode method = new MethodNode(parent);
             // /methodDec/methodHead/methodDec-tor/id
             method.setId(getTextFromXPath(XPaths.METHOD_ID.x, methodTree));
-            //body nodes need work
             method.setBody(getBody(method, methodTree));
             method.setResult(getTextFromXPath(XPaths.METHOD_RETURN.x, methodTree));
             methods.add(method);
@@ -209,9 +223,6 @@ public class ASTBuilder {
             block.setType(getBlockType(blockTree));
             block.setStatement(getStatement(blockTree, block));
             blocks.add(block);
-            if(block.getType() == BlockType.EXPR_ASSN){
-                testAssn(block, blockTree);
-            }
         }
         return blocks;
     }
@@ -287,11 +298,9 @@ public class ASTBuilder {
             node.setLeftHandSide(new AtomNode(node, assignmentTree.getChild(0).getText()));
             node.setOperator(new AtomNode(node, assignmentTree.getChild(1).getText()));
             node.setExpression(new AtomNode(node, assignmentTree.getChild(2).getText()));
-            for(int i=0; i<assignmentTree.getChildCount(); i++){
-                System.out.println("ASSN: "+assignmentTree.getChild(i).getText());
-            }
         }
         //TODO add assns to symtab
+
         return node;
     }
 
@@ -336,9 +345,16 @@ public class ASTBuilder {
     private void updateNameMap(String rName, String cName){
         try{
             Class c = Class.forName(cName);
-            this.nameMap.put(rName, c);
+            Object o = getClass().getDeclaredField(rName).get(Object.class);
+            Map<Object, Class> ocMap = new HashMap<>();
+            ocMap.put(o, c);
+            this.nameMap.put(rName, ocMap);
         } catch (ClassNotFoundException e){
-
+            //TODO error handle nameMap update
+        } catch (IllegalArgumentException e) {
+        } catch (IllegalAccessException e) {
+        } catch (NoSuchFieldException e) {
+        } catch (SecurityException e) {
         }
     }
 
@@ -468,21 +484,6 @@ public class ASTBuilder {
         } catch (ClassNotFoundException e) {
             return null;
         }
-    }
-
-    //called in getblocks
-    private void testAssn(BlockNode block, ParseTree blockTree){
-        String xpath = "blockStatement/statement/statementWithoutTrailingSubstatement/expressionStatement/statementExpression/assignment";
-        AssignmentNode assn = new AssignmentNode(block);
-        for(ParseTree expr : getNodesFromXPath(xpath, blockTree)){
-            ParseTree one = expr.getChild(0);
-            assn.setLeftHandSide(new AtomNode(assn, one.getText()));
-            assn.setOperator(new AtomNode(assn, expr.getChild(1).getText()));
-            assn.setExpression(new AtomNode(assn, expr.getChild(2).getText())); 
-        }
-        String res = assn.toString();
-        System.out.println("ASTBUILDER: TESTING EXPR: "+res);
-
     }
 
     
